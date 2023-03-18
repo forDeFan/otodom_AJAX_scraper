@@ -1,4 +1,6 @@
+import re
 import unicodedata
+from typing import Pattern
 
 from pydantic import BaseModel, validator
 
@@ -30,9 +32,15 @@ class EstateDetails(BaseModel):
             )
             .replace("Oferta pochodzi z serwisu obido", "")
             .replace("\n", " ")
+            .replace("\r", "")
         )
+
+        # Remove HTML tags
+        clear_tags: Pattern[str] = re.compile("<.*?>")
+        d: str = re.sub(clear_tags, "", des)
+
         # Remove \xa0
-        return unicodedata.normalize("NFKD", des)
+        return unicodedata.normalize("NFKD", d)
 
     class Config:
         allow_extra = False
