@@ -8,6 +8,7 @@ Data feed from AJAX generated data without usage of Selenium, just Requests base
 * Beautiful Soup 4<br>
 * Tenacity<br>
 * Pydantic<br>
+* Poetry
 
 
 ## Table of contents
