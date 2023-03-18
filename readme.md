@@ -59,13 +59,15 @@ For general setup (search params mainly): parameters.yaml<br>
 
 Verbose terminal logging is on by default (can be changed in parameters.yaml).<br>
 After succesfull run file (example.txt) with scraped data will be created in project root (filename and path can be defined in parameters.yaml)
-
+<br>
 To start scraper:
+
+If dependencies installed with requirements.txt
 
 ```
 $ python3 main.py
 ```
-or
+if installed with poetry
 ```
 $ poetry run python3 main.py
 ```
