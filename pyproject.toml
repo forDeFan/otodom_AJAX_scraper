@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "otodom-ajax-scraper"
+version = "0.1.0"
+description = "Web page scraper based on AJAX generated data - without usage of Selenium"
+authors = ["Tom <xxtmgxx@protonmail.com>"]
+readme = "README.md"
+packages = [{include = "otodom_ajax_scraper"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "2.28.2"
+beautifulsoup4 = "4.11.2"
+tenacity = "8.2.2"
+pyyaml = "6.0"
+pydantic = "1.10.5"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
