@@ -44,7 +44,6 @@ $ pip install -r requirements.txt
 $ git clone https://github.com/forDeFan/otodom_AJAX_scraper.git
 $ cd otodom_AJAX_scraper
 $ poetry install
-$ poetry run python3 main.py
 ```
 
 ### Parametrization
@@ -63,6 +62,10 @@ To start scraper:
 
 ```
 $ python3 main.py
+```
+or
+```
+$ poetry run python3 main.py
 ```
 
 ## Todo
