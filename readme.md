@@ -58,7 +58,7 @@ For general setup (search params mainly): parameters.yaml<br>
 ## Run
 
 Verbose terminal logging is on by default (can be changed in parameters.yaml).<br>
-After succesfull run file example.txt will be created in project root (filename and path can be defined in parameters.yaml)
+After succesfull run file (example.txt) with scraped data will be created in project root (filename and path can be defined in parameters.yaml)
 
 To start scraper:
 
