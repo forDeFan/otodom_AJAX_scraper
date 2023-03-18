@@ -2,7 +2,7 @@
 
 Data feed from AJAX generated data without usage of Selenium, just Requests based - for speed, efficiency and resources saving.
 
-<h2>Technologies used (specified versions deifned in requirements.txt)</h2>
+<h2>Technologies used</h2>
 * Python 3<br>
 * Requests<br>
 * Beautiful Soup 4<br>
