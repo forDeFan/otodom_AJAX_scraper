@@ -8,14 +8,15 @@ Data feed from AJAX generated data without usage of Selenium, just Requests base
 * Beautiful Soup 4<br>
 * Tenacity<br>
 * Pydantic<br>
-* Poetry
+* Poetry<br>
+* Pytest
 
 
 ## Table of contents
 
 * [Setup](#setup)
 * [Run](#run)
-* [TODO](#todo)
+* [Tests](#tests)
 
 ## Setup
 
@@ -69,6 +70,10 @@ or
 $ poetry run python3 main.py
 ```
 
-## Todo
+## Tests
 
-Tests and possibly contenerization later on.
+Made with pytest.
+
+```
+$ poetry run pytest
+```
