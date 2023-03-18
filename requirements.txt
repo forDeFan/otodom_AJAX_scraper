@@ -1,0 +1,12 @@
+# Scraping
+requests==2.28.2
+beautifulsoup4==4.11.2
+
+# Retries lib
+tenacity==8.2.2
+
+# Parsing
+PyYAML==6.0
+
+# Validation
+pydantic==1.10.5
