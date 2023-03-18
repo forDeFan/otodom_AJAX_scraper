@@ -28,10 +28,23 @@ Data feed from AJAX generated data without usage of Selenium, just Requests base
 
 Advice to set up virtual environment before packages installation.
 
+The project can be installed either by requirements.txt or by poetry.
+
+1. Requirements
+
 ```
 $ git clone https://github.com/forDeFan/otodom_AJAX_scraper.git
 $ cd otodom_AJAX_scraper
 $ pip install -r requirements.txt
+```
+
+2. Poetry
+
+```
+$ git clone https://github.com/forDeFan/otodom_AJAX_scraper.git
+$ cd otodom_AJAX_scraper
+$ poetry install
+$ poetry run python3 main.py
 ```
 
 ### Parametrization
