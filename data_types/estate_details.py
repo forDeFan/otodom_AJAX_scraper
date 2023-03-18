@@ -17,30 +17,45 @@ class EstateDetails(BaseModel):
 
     @validator("price", pre=True)
     def validate_price(cls, price: str) -> str:
-        return price.replace(" zł", "")
+        try:
+            return price.replace(" zł", "")
+        except:
+            raise AttributeError(
+                "price value not provided or not string"
+            )
 
     @validator("size", pre=True)
     def validate_size(cls, size: str) -> str:
-        return size.replace(" m²", "")
+        try:
+            return size.replace(" m²", "")
+        except:
+            raise AttributeError(
+                "size value not provided or not string"
+            )
 
     @validator("description", pre=True)
     def validate_description(cls, description: str) -> str:
-        des: str = (
-            description.replace(
-                "Oferta wysłana z programu dla biur nieruchomości ASARI CRM ()",
-                "",
+        try:
+            des: str = (
+                description.replace(
+                    "Oferta wysłana z programu dla biur nieruchomości ASARI CRM ()",
+                    "",
+                )
+                .replace("Oferta pochodzi z serwisu obido", "")
+                .replace("\n", " ")
+                .replace("\r", "")
             )
-            .replace("Oferta pochodzi z serwisu obido", "")
-            .replace("\n", " ")
-            .replace("\r", "")
-        )
 
-        # Remove HTML tags
-        clear_tags: Pattern[str] = re.compile("<.*?>")
-        d: str = re.sub(clear_tags, "", des)
+            # Remove HTML tags
+            clear_tags: Pattern[str] = re.compile("<.*?>")
+            d: str = re.sub(clear_tags, "", des)
 
-        # Remove \xa0
-        return unicodedata.normalize("NFKD", d)
+            # Remove \xa0
+            return unicodedata.normalize("NFKD", d)
+        except:
+            raise AttributeError(
+                "description not provided or not string"
+            )
 
     class Config:
         allow_extra = False
