@@ -6,7 +6,6 @@ from data_types.estate_details import EstateDetails
 
 class TestEstateDetails:
     def test_if_model_created(self):
-
         expected = {
             "price": "100",
             "size": "10",
@@ -22,7 +21,7 @@ class TestEstateDetails:
         )
 
         assert model.dict() == expected
-        assert type(model) is EstateDetails
+        assert isinstance(model, EstateDetails)
 
     def test_if_exception_when_no_price_value(self):
         with pytest.raises(
