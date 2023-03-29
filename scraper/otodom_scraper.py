@@ -87,7 +87,7 @@ class OtoDomScraper:
     @retry(wait=wait_exponential(multiplier=1, min=2, max=5))
     def get_listing_page_soup(self, page_no: int) -> BeautifulSoup:
 
-        constructed_url: str = self.construct_url_to_listing(
+        constructed_url: str = self.construct_url_for_listing(
             page=page_no
         )
         logging.info(msg="Search url " + constructed_url)
