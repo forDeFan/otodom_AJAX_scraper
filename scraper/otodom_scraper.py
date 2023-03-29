@@ -47,9 +47,7 @@ class OtoDomScraper:
 
         return session
 
-    @retry(wait=wait_exponential(multiplier=1, min=2, max=5))
-    def get_listing_page_soup(self, page_no: int) -> BeautifulSoup:
-
+    def construct_url_for_listing(self, page: str):
         search_base_url: str = f"{self.PARAMS['search_base_url']}"
         offering_type: str = f"{self.PARAMS['offering_type']}/"
         estate_type: str = f"{self.PARAMS['estate_type']}/"
@@ -58,7 +56,7 @@ class OtoDomScraper:
         radius: str = (
             f"{self.PARAMS['radius']}={self.PARAMS['radius_value']}&"
         )
-        page: str = f"{self.PARAMS['pagination']}={str(page_no)}&"
+        page: str = f"{self.PARAMS['pagination']}={str(page)}&"
         max_listing_links: str = (
             f"limit={self.PARAMS['max_listing_links']}&"
         )
@@ -84,6 +82,14 @@ class OtoDomScraper:
             + suffix_url
         )
 
+        return constructed_url
+
+    @retry(wait=wait_exponential(multiplier=1, min=2, max=5))
+    def get_listing_page_soup(self, page_no: int) -> BeautifulSoup:
+
+        constructed_url: str = self.construct_url_to_listing(
+            page=page_no
+        )
         logging.info(msg="Search url " + constructed_url)
 
         with self.session as s:
