@@ -1,3 +1,5 @@
+from typing import Dict
+
 import pytest
 from pydantic.error_wrappers import ValidationError
 
@@ -6,7 +8,7 @@ from data_types.estate import Estate
 
 class TestEstate:
     def test_if_model_created(self):
-        expected = {
+        expected: Dict(str, str) = {
             "url": "test_url",
             "details": {
                 "price": "test_price",
@@ -16,7 +18,7 @@ class TestEstate:
             },
         }
 
-        model = Estate(
+        model: Estate = Estate(
             url="test_url",
             details={
                 "price": "test_price",
