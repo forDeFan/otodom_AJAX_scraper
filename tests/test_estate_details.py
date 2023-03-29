@@ -1,3 +1,5 @@
+from typing import Dict
+
 import pytest
 from pydantic.error_wrappers import ValidationError
 
@@ -6,14 +8,14 @@ from data_types.estate_details import EstateDetails
 
 class TestEstateDetails:
     def test_if_model_created(self):
-        expected = {
+        expected: Dict(str, str) = {
             "price": "100",
             "size": "10",
             "location": "test_location",
             "description": "test_description",
         }
 
-        model = EstateDetails(
+        model: EstateDetails = EstateDetails(
             price="100",
             size="10",
             location="test_location",
