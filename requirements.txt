@@ -3,3 +3,4 @@ beautifulsoup4==4.11.2
 tenacity==8.2.2
 PyYAML==6.0
 pydantic==1.10.5
+requests-mock==1.10.0
