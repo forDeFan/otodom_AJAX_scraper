@@ -1,9 +1,12 @@
+from typing import List
 from unittest.mock import patch
 
 import pytest
 from bs4 import BeautifulSoup
 from requests.sessions import Session
 
+from data_types.estate import Estate
+from data_types.estate_details import EstateDetails
 from scraper.otodom_scraper import OtoDomScraper
 
 
@@ -124,3 +127,97 @@ class TestScraper:
         bs4: BeautifulSoup = BeautifulSoup()
 
         assert "gdansk" in sc.get_estate_details(estate_soup=bs4)
+
+    @patch("scraper.otodom_scraper.OtoDomScraper.get_estate_details")
+    @patch("scraper.otodom_scraper.OtoDomScraper.get_estate_page_soup")
+    def test_if_estate_details_returned_at_parse_estate(
+        self, mock_soup, mock_details, scraper: OtoDomScraper
+    ):
+
+        mock_soup.return_value = None
+        mock_details.return_value = [
+            "test_price",
+            "test_size",
+            "test_location",
+            "test_description",
+        ]
+
+        sc: OtoDomScraper = scraper()
+        result: EstateDetails = sc.parse_estate(estate_url="test")
+
+        assert isinstance(result, EstateDetails)
+        assert "test_description" in result.description
+
+    @patch(
+        "scraper.otodom_scraper.OtoDomScraper.PARAMS",
+        {
+            "agent": "test_header",
+            "retry": {"connect": None, "read": None, "redirect": None},
+            "sleep_time": 0,
+            "verbose_logging": False,
+        },
+    )
+    @patch("scraper.otodom_scraper.OtoDomScraper.parse_estate")
+    @patch(
+        "scraper.otodom_scraper.OtoDomScraper.get_estate_links_from_listing"
+    )
+    def test_if_list_of_estates_returned_when_parse_page(
+        self, mock_links, mock_parse, scraper
+    ):
+        mock_links.return_value = ["test_url_1", "test_url_2"]
+        mock_parse.return_value = EstateDetails(
+            price="test_price",
+            size="test_size",
+            location="test_location",
+            description="test_description",
+        )
+
+        sc: OtoDomScraper = scraper()
+        result: List[Estate] = sc.parse_page(listing_soup="test")
+
+        assert "test_url_1" in result[0].url
+        assert isinstance(result[0].details, EstateDetails)
+
+    @patch(
+        "scraper.otodom_scraper.OtoDomScraper.PARAMS",
+        {
+            "agent": "test_header",
+            "retry": {"connect": None, "read": None, "redirect": None},
+            "sleep_time": 0,
+            "verbose_logging": False,
+            "page_limit": 1,
+        },
+    )
+    @patch("scraper.otodom_scraper.OtoDomScraper.parse_page")
+    @patch("scraper.otodom_scraper.OtoDomScraper.get_listing_page_soup")
+    def test_if_list_of_estates_returned_when_parse_site(
+        self, mock_listing, mock_parse, scraper
+    ):
+        mock_listing.return_value = None
+        mock_parse.return_value = [
+            Estate(
+                url="test_url_estate_1",
+                details=EstateDetails(
+                    price="test_price",
+                    size="test_size",
+                    location="test_location",
+                    description="test_description",
+                ),
+            ),
+            Estate(
+                url="test_url_estate_2",
+                details=EstateDetails(
+                    price="test_price_2",
+                    size="test_size",
+                    location="test_location",
+                    description="test_description",
+                ),
+            ),
+        ]
+
+        sc: OtoDomScraper = scraper()
+        result: List[Estate] = sc.parse_site()
+
+        assert "test_url_estate_1" in result[0].url
+        assert "test_price_2" in result[1].details.price
+        assert len(result) == 2
