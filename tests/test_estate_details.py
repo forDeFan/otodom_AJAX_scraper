@@ -81,3 +81,14 @@ class TestEstateDetails:
                 location="test",
                 description="test",
             )
+
+    def test_if_description_cleared_from_sepcial_chars(self):
+        details = EstateDetails(
+            price="100",
+            size="test",
+            location="test",
+            description="\u003cbr\u003e\u003cbr\u003etest_details",
+        )
+
+        assert "\u003cbr\u003e\u003cbr\u003e" not in details.description
+        assert "test_details" in details.description
