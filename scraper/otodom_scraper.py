@@ -22,6 +22,7 @@ logging.basicConfig(
 
 
 class OtoDomScraper:
+    # From parameters.yaml
     PARAMS: Dict[str, Any] = ParametersHandler().get_params()
 
     def __init__(self) -> None:
@@ -33,6 +34,8 @@ class OtoDomScraper:
     def _init_session(self) -> Session:
         """
         Start session per single requests instance.
+
+        Returns: requests.session object
         """
         session: Session = Session()
         retries: Retry = Retry(
@@ -40,14 +43,23 @@ class OtoDomScraper:
             read=self.PARAMS["retry"]["read"],
             redirect=self.PARAMS["retry"]["read"],
         )
-
+        # Custom retries from parameters.yaml
         session.mount("http://", HTTPAdapter(max_retries=retries))
         session.mount("https://", HTTPAdapter(max_retries=retries))
+        # Cutsom header from parameters.yaml in order to avoid blocking
         session.headers.update({"User-agent": self.PARAMS["agent"]})
 
         return session
 
     def construct_url_for_listing(self, page: str):
+        """
+        Construct and return url for estate listing page accordingly
+        to set up in parameterss.yaml.
+
+        page(str): number of listing page to go to
+
+        Returns(str): constructed url
+        """
         search_base_url: str = f"{self.PARAMS['search_base_url']}"
         offering_type: str = f"{self.PARAMS['offering_type']}/"
         estate_type: str = f"{self.PARAMS['estate_type']}/"
@@ -86,7 +98,15 @@ class OtoDomScraper:
 
     @retry(wait=wait_exponential(multiplier=1, min=2, max=5))
     def get_listing_page_soup(self, page_no: int) -> BeautifulSoup:
+        """
+        Returns Bs4 soup of listing page at desired page number.
 
+        Args:
+            page_no (int): number of listing page to scrap soup from
+
+        Returns:
+            BeautifulSoup: soup of listing page
+        """
         constructed_url: str = self.construct_url_for_listing(
             page=page_no
         )
@@ -100,6 +120,15 @@ class OtoDomScraper:
 
     @retry(wait=wait_exponential(multiplier=1, min=2, max=5))
     def get_estate_page_soup(self, estate_url: str) -> BeautifulSoup:
+        """
+        Returns Bs4 soup of estate advert.
+
+        Args:
+            estate_url (str): estate url to take soup from
+
+        Returns:
+            BeautifulSoup: soup of estate advert
+        """
 
         with self.session as s:
             page_source: Response = s.get(estate_url)
@@ -112,7 +141,15 @@ class OtoDomScraper:
     def get_estate_links_from_listing(
         self, listing_soup: BeautifulSoup
     ) -> List[str]:
+        """
+        Collect all links to estate adverts from listing page.
 
+        Args:
+            listing_soup (BeautifulSoup): soup of specified listing page
+
+        Returns:
+            List[str]: list of urls
+        """
         script: str = listing_soup.find(id="__NEXT_DATA__").text
         script_json: str = json.loads(script)
         script_json_estates: str = script_json["props"]["pageProps"][
@@ -131,7 +168,15 @@ class OtoDomScraper:
     def get_estate_details(
         self, estate_soup: BeautifulSoup
     ) -> List[str]:
+        """
+        Collect details from estate advert page.
 
+        Args:
+            estate_soup (BeautifulSoup): soup of estate advert
+
+        Returns:
+            List[str]: list of estate details
+        """
         script: str = estate_soup.find(id="__NEXT_DATA__").text
         script_json: Dict[str, str] = json.loads(script)
         script_json_details: str = script_json["props"]["pageProps"][
@@ -151,7 +196,15 @@ class OtoDomScraper:
         return estate_details
 
     def parse_estate(self, estate_url: str) -> EstateDetails:
+        """
+        Parse estate advert page and returns list of validated EstateDetails model.
 
+        Args:
+            estate_url (str): url to specific estate advert
+
+        Returns:
+            EstateDetails: validated model of estate details
+        """
         soup: BeautifulSoup = self.get_estate_page_soup(
             estate_url=estate_url
         )
@@ -199,6 +252,14 @@ class OtoDomScraper:
         return estates
 
     def parse_site(self) -> List[Estate]:
+        """
+        Main scraper function - goes thru estate listing (number of subpages in parameters.yaml),
+        collect links to specific estate adverts, parse them and return list of validated
+        Estate models.
+
+        Returns:
+            List[Estate]: list of validated Estate models.
+        """
 
         if self.PARAMS["verbose_logging"]:
             logging.info("## Scraper started ##")
@@ -248,8 +309,8 @@ class OtoDomScraper:
 
     def save_data(self, temp_path: str, to_write: Any) -> None:
         """
-        Save results to specified file in temp_path specified path - if just filename without path provided,
-        it will be saved in project root.
+        Save results to specified file at temp_path - if just filename without path provided,
+        result file will be saved in a project root.
         """
         with open(temp_path, "w+", encoding="utf-8") as f:
             for line in to_write:
