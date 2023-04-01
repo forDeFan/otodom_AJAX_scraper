@@ -19,7 +19,9 @@ class TestScraper:
             "retry": {"connect": None, "read": None, "redirect": None},
         },
     )
-    def test_if_session_initialized(self, scraper: OtoDomScraper):
+    def test_if_session_initialized_with_custom_user_agent(
+        self, scraper: OtoDomScraper
+    ):
         sc: OtoDomScraper = scraper()
 
         assert isinstance(sc.session, Session)
@@ -54,3 +56,71 @@ class TestScraper:
 
         assert isinstance(bs4, BeautifulSoup)
         assert "test_html_markup" in bs4.text
+
+    @patch("json.loads")
+    @patch("scraper.otodom_scraper.BeautifulSoup.find")
+    def test_if_listing_links_returned(
+        self, mock_find, mock_json, scraper
+    ):
+        mock_find.text.return_value = None
+        mock_json.return_value = {
+            "props": {
+                "pageProps": {
+                    "data": {
+                        "searchAds": {
+                            "items": [
+                                {
+                                    "id": 1,
+                                    "title": "test flat",
+                                    "slug": "test-flat",
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+
+        sc: OtoDomScraper = scraper()
+        bs4: BeautifulSoup = BeautifulSoup()
+
+        assert (
+            "test-flat"
+            in sc.get_estate_links_from_listing(listing_soup=bs4)[0]
+        )
+
+    @patch("json.loads")
+    @patch("scraper.otodom_scraper.BeautifulSoup.find")
+    def test_if_estate_details_returned(
+        self, mock_find, mock_json, scraper
+    ):
+        mock_find.text.return_value = None
+        mock_json.return_value = {
+            "props": {
+                "pageProps": {
+                    "ad": {
+                        "description": 'DESCRIPTION:EXTREMLY LONG DESCRIPTION"',
+                        "target": {"City": "gdansk"},
+                        "characteristics": [
+                            {
+                                "key": "price",
+                                "value": "545000",
+                                "label": "Cena",
+                                "localizedValue": "545 000 zł",
+                            },
+                            {
+                                "key": "m",
+                                "value": "52.7",
+                                "label": "Powierzchnia",
+                                "localizedValue": "52,70 m²",
+                            },
+                        ],
+                    }
+                }
+            }
+        }
+
+        sc: OtoDomScraper = scraper()
+        bs4: BeautifulSoup = BeautifulSoup()
+
+        assert "gdansk" in sc.get_estate_details(estate_soup=bs4)
