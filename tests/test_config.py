@@ -14,7 +14,6 @@ class TestConfig:
 
         with pytest.raises(ValueError):
             ParametersHandler()
-            assert True
 
     @patch("yaml.safe_load")
     def test_if_params_returned(self, mock_safe_load):
